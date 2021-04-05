@@ -84,7 +84,7 @@ local Update = function(self, event, unit)
 	end
 
 	if(element.PostUpdate) then
-		return element:PostUpdate(unit, cur, max, min)
+		return element:PostUpdate(cur, max)
 	end
 end
 

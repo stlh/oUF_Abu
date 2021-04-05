@@ -24,15 +24,13 @@ local colors = oUF.colors
 	Hooks and callbacks
 
 		CCastbar.PostCastStart(unit, name, castID)
-		CCastbar.PostCastFailed(unit, spellname, castID)
+		CCastbar.PostCastFail(unit, spellname, castID)
 		CCastbar.PostCastStop(unit, spellname, castID)
 		CCastbar.PostCastInterrupted(unit, spellname, castID)
 		CCastbar.PostCastInterruptible(unit)
-		CCastbar.PostCastNotInterruptible(unit)
 		CCastbar.PostCastDelayed(unit, name, castID)
 		CCastbar.PostChannelStart(unit, name)
 		CCastbar.PostChannelUpdate(unit, name)
-		CCastbar.PostChannelStop(unit, spellname)
 
 		CCastbar.CustomDelayText(duration)
 		CCastbar.CustomTimeText(duration)
@@ -117,7 +115,7 @@ events.UNIT_SPELLCAST_START = function(self, event, unit, castID, spellID)
 	castbar:SetAlpha(1.0)
 	castbar:Show()
 	if(castbar.PostCastStart) then
-		castbar:PostCastStart(unit, castID, spellID)
+		castbar:PostCastStart(unit)
 	end
 end
 
@@ -136,8 +134,8 @@ events.UNIT_SPELLCAST_FAILED = function(self, event, unit, castID, spellID)
 
 	castbar.holdTime = GetTime() + CASTING_BAR_HOLD_TIME
 
-	if(castbar.PostCastFailed) then
-		return castbar:PostCastFailed(unit, castID, spellID)
+	if(castbar.PostCastFail) then
+		return castbar:PostCastFail(unit, spellID)
 	end
 end
 
@@ -167,7 +165,7 @@ events.UNIT_SPELLCAST_INTERRUPTIBLE = function(self, event, unit, castID, spellI
 	castbar.interrupt = nil
 
 	if(castbar.PostCastInterruptible) then
-		return castbar:PostCastInterruptible(unit, castID, spellID)
+		return castbar:PostCastInterruptible(unit)
 	end
 end
 
@@ -178,8 +176,8 @@ events.UNIT_SPELLCAST_NOT_INTERRUPTIBLE = function(self, event, unit, castID, sp
 	if(castbar.Shield) then castbar.Shield:Show() end
 	castbar.interrupt = 1
 
-	if(castbar.PostCastNotInterruptible) then
-		return castbar:PostCastNotInterruptible(unit, castID, spellID)
+	if(castbar.PostCastInterruptible) then
+		return castbar:PostCastInterruptible(unit)
 	end
 end
 
@@ -211,8 +209,8 @@ events.UNIT_SPELLCAST_DELAYED = function(self, event, unit, castID, spellID)
 		castbar.fadeOut = 0
 	end
 
-	if(castbar.PostCastDelayed) then
-		return castbar:PostCastDelayed(unit, castID, spellID)
+	if(castbar.PostCastUpdate) then
+		return castbar:PostCastUpdate(unit)
 	end
 end
 
@@ -239,7 +237,7 @@ events.UNIT_SPELLCAST_STOP = function(self, event, unit, castID, spellID)
 
 		castbar:SetValue(castbar.max)
 		if(castbar.PostCastStop) then
-			return castbar:PostCastStop(unit, castID, spellID)
+			return castbar:PostCastStop(unit, spellID)
 		end
 	end
 end
@@ -263,8 +261,8 @@ events.UNIT_SPELLCAST_CHANNEL_STOP = function(self, event, unit, castID, spellID
 		castbar.fadeOut = 1
 		castbar.holdTime = 0
 
-		if(castbar.PostChannelStop) then
-			return castbar:PostChannelStop(unit, castID, spellID)
+		if(castbar.PostCastStop) then
+			return castbar:PostCastStop(unit, spellID)
 		end
 	end
 end
@@ -315,7 +313,7 @@ events.UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, castID, spellI
 
 	castbar:SetAlpha(1.0)
 	castbar:Show()
-	if(castbar.PostChannelStart) then castbar:PostChannelStart(unit, castID, spellID) end
+	if(castbar.PostChannelStart) then castbar:PostCastStart(unit) end
 end
 
 events.UNIT_SPELLCAST_CHANNEL_UPDATE = function(self, event, unit, castID, spellID)
@@ -336,8 +334,8 @@ events.UNIT_SPELLCAST_CHANNEL_UPDATE = function(self, event, unit, castID, spell
 	castbar:SetMinMaxValues(0, castbar.max)
 	castbar:SetValue(duration)
 
-	if(castbar.PostChannelUpdate) then
-		return castbar:PostChannelUpdate(unit, castID, spellID)
+	if(castbar.PostCastUpdate) then
+		return castbar:PostCastUpdate(unit)
 	end
 end
 
@@ -461,7 +459,7 @@ local onUpdate = function(self, elapsed)
 			self.interrupt = nil
 			self.holdTime = 0
 
-			if(self.PostChannelStop) then self:PostChannelStop(self.__owner.unit) end
+			if(self.PostCastStop) then self:PostCastStop(self.__owner.unit) end
 			return
 		end
 
@@ -542,7 +540,7 @@ local function UnrealCastbar(castbar)
 	castbar:SetAlpha(1.0)
 	castbar:Show()
 	if(castbar.PostCastStart) then
-		castbar:PostCastStart("player", "Fake Cast", 0)
+		castbar:PostCastStart("player")
 	end
 end
 

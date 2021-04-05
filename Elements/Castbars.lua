@@ -180,12 +180,10 @@ function ns.CreateCastbars(self)
 	Castbar.Text:SetWordWrap(false)
 
 	Castbar.PostCastStart = ns.PostCastStart
-	Castbar.PostCastFailed = ns.PostCastFailed
+	Castbar.PostCastFail = ns.PostCastFail
 	Castbar.PostCastInterrupted = ns.PostCastInterrupted
-	Castbar.PostCastInterruptible = ns.UpdateCastbarColor
-	Castbar.PostCastNotInterruptible = ns.UpdateCastbarColor
-	Castbar.PostCastStop = ns.PostStop
-	Castbar.PostChannelStop = ns.PostStop
+	Castbar.PostCastInterruptible = ns.PostCastInterruptible
+	Castbar.PostCastStop = ns.PostCastStop
 	Castbar.PostChannelStart = ns.PostChannelStart
 	Castbar.PostChannelUpdate = ns.PostChannelStart
 
@@ -205,7 +203,7 @@ function ns.PostCastStart(Castbar, unit, castID, spellID)
 	end
 end
 
-function ns.PostCastFailed(Castbar, unit, castID, spellID)
+function ns.PostCastFail(Castbar, unit, spellID)
 	if (Castbar.Text) then
 		Castbar.Text:SetText(FAILED) 
 	end

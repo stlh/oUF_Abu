@@ -280,7 +280,9 @@ function ns.UpdateHealthOverride(self, event, unit)
 		self.Health:SetValue(cur)
 	end
 	self.Health.disconnected = disconnected
-	self.Health:UpdateColor(unit, cur, max)
+	if (self.Health.UpdateColor) then
+	    self.Health:UpdateColor(self, event, unit)
+	end
 	updateAbsorbBars(self.Health, unit, cur, max)
 
 	ns.PostUpdateHealth(self.Health, unit, cur, max)
@@ -474,7 +476,7 @@ end
 -- [[ Statusbar Functions ]] --
 function ns.CreateStatusBar(parent, layer, name, AddBackdrop)
 	if type(layer) ~= 'string' then layer = 'BORDER' end
-	local bar = CreateFrame('StatusBar', name, parent)
+	local bar = CreateFrame('StatusBar', name, parent, 'BackdropTemplate')
 	bar:SetStatusBarTexture(ns.config.statusbar, layer)
 	bar.texture = ns.config.statusbar
 	
